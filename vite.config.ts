@@ -13,6 +13,11 @@ export default defineConfig({
       tsconfigPath: './tsconfig.types.json'
     })
   ],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+    },
+  },
   build: {
     outDir: 'dist',
     lib: {
