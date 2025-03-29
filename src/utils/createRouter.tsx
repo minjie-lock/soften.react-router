@@ -41,7 +41,7 @@ export default function createRouter<R extends Router[]>(routes: R): RouterStati
           ...rest
         } = item;
 
-        const element =createBeforeRouter<ResolvePaths<R>>(
+        const element = createBeforeRouter<ResolvePaths<R>>(
           item?.element,
           [enter, beforeEnter],
           [leave, beforeLeave],

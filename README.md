@@ -10,7 +10,7 @@ npm install ask-router
 ## 使用
 
 ```tsx
-import { createRouter, StationRouter } from 'ask-router';
+import { createRouter, StationBrowserRouter } from 'ask-router';
 
 const router = createRouter([
   {
@@ -23,14 +23,14 @@ const router = createRouter([
 
 function Root() {
   return (
-    <StationRouter router={router} />
+    <StationBrowserRouter router={router} />
   )
 }
 ```
 
 ## 全局路由守卫
 ```tsx
-import { createRouter, StationRouter } from 'ask-router';
+import { createRouter, StationBrowserRouter } from 'ask-router';
 const router = createRouter([
   {
     path: '/home',
@@ -58,7 +58,7 @@ router.beforeRouter(beforEnter, beforeLeave);
 ## 路由独享守卫
 
 ```tsx
-import { createRouter, StationRouter } from 'ask-router';
+import { createRouter, StationBrowserRouter } from 'ask-router';
 const router = createRouter([
   {
     path: '/home',
@@ -70,10 +70,10 @@ const router = createRouter([
       // 返回 next() 函数执行渲染，不返回则不渲染;
       return next();
     },
-    berforeLeave: (proceed) => {
+    berforeLeave: (next) => {
       // 路由离开前执行
-      // 执行 proceed()函数执行离开，不执行则不离开;
-      proceed();
+      // 执行 next()传递参数 true 则执行离开 flase 则不离开;
+      next(true);
     }
   }
 ]);
@@ -84,7 +84,7 @@ const router = createRouter([
 _前提需要将参数路由地址设置为常量_
 
 ```tsx
-import { createRouter, StationRouter } from 'ask-router';
+import { createRouter, StationBrowserRouter } from 'ask-router';
 const router = createRouter([
   {
     path: 'home',
@@ -106,12 +106,10 @@ const router = createRouter([
 
 _与 React Router 的 useNavigate 用法一致_
 
-
-
 ```tsx
-const useLink = router.createLink();
+const link = router.useLink();
 
-useLink('/home')
+link('/home')
 ```
 
 ## 组件里守卫

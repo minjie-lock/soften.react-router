@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useEffect } from "react";
-import { BlockerFunction, Navigate, useBlocker } from "react-router-dom";
+import { BlockerFunction, Navigate, useBlocker, useNavigate } from "react-router-dom";
 import { EnterFn, LeaveFn } from "../types";
 
 interface BeforeRouterProps {
@@ -74,8 +74,7 @@ export default function createBeforeRouter<R extends string>(
         }
       },
       [blocker?.state]
-    )
-
+    );
 
     useEffect(() => {
       onBlocker();
