@@ -1,6 +1,6 @@
 # ask-router
 
-_添加守卫的 React 路由_
+_对 React Router 进行加法，添加类 Vue Router 的路由守卫功能_
 
 ## 安装
 ```bash
@@ -23,7 +23,9 @@ const router = createRouter([
 
 function Root() {
   return (
-    <StationBrowserRouter router={router} />
+    <StationBrowserRouter 
+      router={router}
+     />
   )
 }
 ```
@@ -40,19 +42,19 @@ const router = createRouter([
   }
 ]);
 
-const beforEnter = (next, to) => {
-  // 路由渲染前
-  // 返回 next() 函数执行渲染，不返回则不渲染;
-  return next();
-}
 
-const beforeLeave = (proceed) => {
-  // 路由离开前执行
-  // 执行 proceed()函数执行离开，不执行则不离开;
-  proceed();
-}
-
-router.beforeRouter(beforEnter, beforeLeave);
+router.beforeRouter({
+  enter: () => {
+    // 路由渲染前
+    // 返回 true 函数执行渲染，false 则不渲染;
+    return true;
+  },
+  leave: () => {
+    // 路由离开前执行
+    // 执行 proceed()函数执行离开，不执行则不离开;
+    next();
+  }
+});
 ```
 
 ## 路由独享守卫
@@ -66,8 +68,8 @@ const router = createRouter([
       <div>home</div>
     ),
     beforeEnter: (next, to) => {
-      // 路由渲染前
-      // 返回 next() 函数执行渲染，不返回则不渲染;
+    // 路由渲染前
+    // 返回 true 函数执行渲染，false 则不渲染;
       return next();
     },
     berforeLeave: (next) => {
@@ -140,4 +142,5 @@ _全局守卫 -> 路由独享守卫 -> 组件里守卫_
 
 
 ## 注意事项
-_路由守卫的执行顺序是按照路由的添加顺序执行的，所以路由的添加顺序很重要_
+
+__路由守卫的执行顺序是按照路由的添加顺序执行的，所以路由的添加顺序很重要__

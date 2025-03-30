@@ -4,6 +4,19 @@ import createBeforeRouter from "./createBeforeRouter";
 
 type BrowserRouter = ReturnType<typeof createBrowserRouter>;
 
+type BeforeRecord = {
+  /**
+   * @function enter
+   * @description 全局路由前置守卫
+  */
+  enter?: EnterFn,
+  /**
+   * @function leave
+   * @description 全局路由退出守卫
+  **/
+  leave?: LeaveFn
+}
+
 interface RouterStation<R extends readonly Router[]> {
   /**
    * @function beforeEnter
@@ -11,7 +24,7 @@ interface RouterStation<R extends readonly Router[]> {
    * @param enter 创建前调用
    * @param leave 退出前调用
   */
-  beforeRouter: (enter?: EnterFn<ResolvePaths<R>>, leave?: LeaveFn) => void;
+  beforeRouter: (before: BeforeRecord) => void;
   router?: BrowserRouter;
   /**
    * @function useLink
@@ -29,10 +42,13 @@ export default function createRouter<R extends Router[]>(routes: R): RouterStati
    * @description 全局前置路由守卫
    * @param enter 
   */
-  const beforeRouter = (
-    enter?: EnterFn<ResolvePaths<R>>,
-    leave?: LeaveFn
-  ) => {
+  const beforeRouter = (before: BeforeRecord) => {
+
+    const {
+      enter,
+      leave
+    } = before;
+
     station.router = createBrowserRouter(
       routes?.map((item) => {
         const {
@@ -41,7 +57,7 @@ export default function createRouter<R extends Router[]>(routes: R): RouterStati
           ...rest
         } = item;
 
-        const element = createBeforeRouter<ResolvePaths<R>>(
+        const element = createBeforeRouter(
           item?.element,
           [enter, beforeEnter],
           [leave, beforeLeave],
@@ -67,7 +83,7 @@ export default function createRouter<R extends Router[]>(routes: R): RouterStati
         beforeEnter,
         ...rest
       } = item;
-      const element = createBeforeRouter<ResolvePaths<R>>(
+      const element = createBeforeRouter(
         item?.element,
         [beforeEnter],
         [beforeLeave]

@@ -1,6 +1,6 @@
 
-export type EnterFn<R> = (
-  to: (path: R) => React.ReactNode,
+export type EnterFn = (
+  to: ReturnType<typeof useLocation>,
 ) => Promise<boolean> | boolean;
 
 export type LeaveFn = (next: (result: boolean) => void) => void;

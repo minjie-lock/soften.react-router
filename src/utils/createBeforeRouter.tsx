@@ -1,5 +1,5 @@
-import React, { createContext, useCallback, useEffect } from "react";
-import { BlockerFunction, Navigate, useBlocker, useNavigate } from "react-router-dom";
+import React, { createContext, useCallback, useEffect, useState } from "react";
+import { BlockerFunction, useBlocker, useLocation } from "react-router-dom";
 import { EnterFn, LeaveFn } from "../types";
 
 interface BeforeRouterProps {
@@ -10,9 +10,9 @@ export const BlockerRouter = createContext<{
   leaves?: (LeaveFn | void)[]
 }>({});
 
-export default function createBeforeRouter<R extends string>(
+export default function createBeforeRouter(
   element: React.ReactNode,
-  enters?: (EnterFn<R> | void)[],
+  enters?: (EnterFn | void)[],
   leaves?: (LeaveFn | void)[]
 ) {
 
@@ -27,21 +27,13 @@ export default function createBeforeRouter<R extends string>(
       children
     } = props;
 
-    const to = (path: R) => {
-      return <Navigate to={path} />
-    }
+    const [enter, setEnter] = useState(false);
+
+    const to = useLocation();
 
     if (!enters?.length) {
       return children
     }
-
-    /**
-     * 所有守卫通过才会渲染组件
-    */
-    const every = enters.every((enter) => {
-      if (typeof enter !== 'function') return true;
-      return enter?.(to)
-    });
 
     const Blocker: BlockerFunction = (location) => {
       const {
@@ -80,8 +72,19 @@ export default function createBeforeRouter<R extends string>(
       onBlocker();
     }, [onBlocker]);
 
+    /**
+     * 所有守卫通过才会渲染组件
+    */
 
-    if (every) {
+    useEffect(() => {
+      const every = enters.every((enter) => {
+        if (typeof enter !== 'function') return true;
+        return enter?.(to)
+      });
+      setEnter(every);
+    }, [to.pathname]);
+
+    if (enter) {
       return children
     }
 
