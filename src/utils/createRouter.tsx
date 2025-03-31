@@ -35,7 +35,7 @@ interface RouterStation<R extends readonly Router[]> {
 }
 
 
-export default function createRouter<R extends Router[]>(routes: R): RouterStation<R> {
+export default function createRouter<R extends Array<Router>>(routes: R): RouterStation<R> {
 
   /**
    * @function beforeEnter
@@ -106,4 +106,3 @@ export default function createRouter<R extends Router[]>(routes: R): RouterStati
 
   return station;
 };
-
