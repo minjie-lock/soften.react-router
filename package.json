@@ -1,7 +1,7 @@
 {
   "name": "ask-router",
   "private": false,
-  "version": "0.0.1",
+  "version": "0.0.7",
   "type": "module",
   "main": "./dist/ask-router.cjs",
   "module": "./dist/ask-router.js",

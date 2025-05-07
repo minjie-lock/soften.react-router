@@ -1,48 +1,17 @@
 import { createBrowserRouter, useNavigate } from "react-router-dom";
-import { EnterFn, LeaveFn, ResolvePaths, Router } from "../types";
+import { BeforeRecord, ResolvePaths, Router, RouterStation } from "../types";
 import createBeforeRouter from "./createBeforeRouter";
-
-type BrowserRouter = ReturnType<typeof createBrowserRouter>;
-
-type BeforeRecord = {
-  /**
-   * @function enter
-   * @description 全局路由前置守卫
-  */
-  enter?: EnterFn,
-  /**
-   * @function leave
-   * @description 全局路由退出守卫
-  **/
-  leave?: LeaveFn
-}
-
-interface RouterStation<R extends readonly Router[]> {
-  /**
-   * @function beforeEnter
-   * @description 全局前置路由守卫
-   * @param enter 创建前调用
-   * @param leave 退出前调用
-  */
-  beforeRouter: (before: BeforeRecord) => void;
-  router?: BrowserRouter;
-  /**
-   * @function useLink
-   * @description 带有路径提示的路由航行
-   * @returns 一个 hook 函数，需要带 use 命名开头
-   */
-  useLink: () => (to: ResolvePaths<R>) => void;
-}
+import React, { lazy } from "react";
 
 
-export default function createRouter<R extends Array<Router>>(routes: R): RouterStation<R> {
+export default function createRouter<R extends Router<R>[]>(routes: R): RouterStation<R> {
 
   /**
    * @function beforeEnter
    * @description 全局前置路由守卫
    * @param enter 
   */
-  const beforeRouter = (before: BeforeRecord) => {
+  const beforeRouter = (before: BeforeRecord<R>) => {
 
     const {
       enter,
@@ -57,8 +26,10 @@ export default function createRouter<R extends Array<Router>>(routes: R): Router
           ...rest
         } = item;
 
+        const Start = (typeof item?.element === 'function' ? 
+        lazy(item?.element) : () => item?.element) as () => React.ReactNode;
         const element = createBeforeRouter(
-          item?.element,
+          <Start />,
           [enter, beforeEnter],
           [leave, beforeLeave],
         );
@@ -72,8 +43,8 @@ export default function createRouter<R extends Array<Router>>(routes: R): Router
   };
 
   const useLink = () => {
-    const link = useNavigate();
-    return (to: ResolvePaths<R>) => link(to);
+    const toLink = useNavigate();
+    return (to: ResolvePaths<R> | number) => toLink(to);
   }
 
   const router = createBrowserRouter(
@@ -83,8 +54,10 @@ export default function createRouter<R extends Array<Router>>(routes: R): Router
         beforeEnter,
         ...rest
       } = item;
+      const Start = (typeof item?.element === 'function' ? 
+        lazy(item?.element) : () => item?.element) as () => React.ReactNode;
       const element = createBeforeRouter(
-        item?.element,
+        <Start />,
         [beforeEnter],
         [beforeLeave]
       );

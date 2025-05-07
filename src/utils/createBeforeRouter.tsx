@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useEffect, useState } from "react";
-import { BlockerFunction, useBlocker, useLocation } from "react-router-dom";
+import { BlockerFunction, useBlocker, useLocation, useNavigate } from "react-router-dom";
 import { EnterFn, LeaveFn } from "../types";
 
 interface BeforeRouterProps {
@@ -10,9 +10,9 @@ export const BlockerRouter = createContext<{
   leaves?: (LeaveFn | void)[]
 }>({});
 
-export default function createBeforeRouter(
+export default function createBeforeRouter<R>(
   element: React.ReactNode,
-  enters?: (EnterFn | void)[],
+  enters?: (EnterFn<R> | void)[],
   leaves?: (LeaveFn | void)[]
 ) {
 
@@ -29,7 +29,8 @@ export default function createBeforeRouter(
 
     const [enter, setEnter] = useState(false);
 
-    const to = useLocation();
+    const to = useNavigate();
+    const location = useLocation();
 
     if (!enters?.length) {
       return children
@@ -62,7 +63,6 @@ export default function createBeforeRouter(
           }
           const predicate = every?.every(predicate => predicate);
           if (predicate) blocker.proceed(); else blocker.reset();
-
         }
       },
       [blocker?.state]
@@ -75,19 +75,25 @@ export default function createBeforeRouter(
     /**
      * 所有守卫通过才会渲染组件
     */
-
-    useEffect(() => {
-      const every = enters.every((enter) => {
-        if (typeof enter !== 'function') return true;
-        return enter?.(to)
-      });
+    const createEnter = async () => {
+      const deep = [];
+      for (const enter of enters) {
+        if (typeof enter !== 'function') {
+          deep.push(true)
+        }else{
+          deep.push(await enter(to))
+        }
+      }
+      const every = deep.every((item) => item);
       setEnter(every);
-    }, [to.pathname]);
+    }
+    useEffect(() => {
+      createEnter();
+    }, [location.pathname]);
 
     if (enter) {
       return children
     }
-
   };
 
 
