@@ -1,5 +1,5 @@
 import { lazy } from 'react';
-export type EnterFn<R> =  (
+export type EnterFn<R> = (
   to: (to: ResolvePaths<R> | number) => void,
 ) => Promise<boolean> | boolean;
 
@@ -69,11 +69,21 @@ export interface RouterStation<R extends readonly Router[]> {
 }
 
 
+
+type ResolveId<T extends string> =
+  T extends `${infer Prefix}/:${infer Param}` ?
+  T extends `${infer Prefix}/:${infer Param}?` ? `${Prefix}` | `${Prefix}/${string}` :
+  `${Prefix}/${string}` : T;
+
+// 如果是以 `/` 开头的路径，直接使用
+// 否则拼接上父路径并添加 `/`
+type ResultPaths<Path, P = ''> = Path extends `/${string}` ? ResolveId<Path> : ResolveId<`${P}/${Path}`>
+
+
 export type ResolvePaths<T extends readonly Router[], P extends string = ""> = T extends readonly (infer R)[]
   ? R extends { path: infer Path extends string; children?: infer Children }
-  ? (Path extends `/${string}`
-    ? `${Path}` // 如果是以 `/` 开头的路径，直接使用
-    : `${P}/${Path}`) // 否则拼接上父路径并添加 `/`
-  | (Children extends readonly Router[] ? ResolvePaths<Children, Path extends `/${string}` ? Path : `${P}/${Path}`> : never)
+  ? ResultPaths<Path, P>
+  | (Children extends readonly Router[] ?
+    ResolvePaths<Children, ResultPaths<Path, P>> : never)
   : never
   : never;
