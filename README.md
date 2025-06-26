@@ -1,16 +1,16 @@
-# ask-router
+# @soften/react-router
 
 _对 React Router 进行加法，添加类 Vue Router 的路由守卫功能_
 
 ## 安装
 ```bash
-npm install ask-router
+npm install @soften/react-router
 ```
 
 ## 使用
 
 ```tsx
-import { createRouter, StationBrowserRouter } from 'ask-router';
+import { createRouter, StationBrowserRouter } from '@soften/react-router';
 
 const router = createRouter([
   {
@@ -32,7 +32,7 @@ function Root() {
 
 ## 全局路由守卫
 ```tsx
-import { createRouter, StationBrowserRouter } from 'ask-router';
+import { createRouter, StationBrowserRouter } from '@soften/react-router';
 const router = createRouter([
   {
     path: '/home',
@@ -60,7 +60,7 @@ router.beforeRouter({
 ## 路由独享守卫
 
 ```tsx
-import { createRouter, StationBrowserRouter } from 'ask-router';
+import { createRouter, StationBrowserRouter } from '@soften/react-router';
 const router = createRouter([
   {
     path: '/home',
@@ -86,7 +86,7 @@ const router = createRouter([
 _前提需要将参数路由地址设置为常量_
 
 ```tsx
-import { createRouter, StationBrowserRouter } from 'ask-router';
+import { createRouter, StationBrowserRouter } from '@soften/react-router';
 const router = createRouter([
   {
     path: 'home',
@@ -117,7 +117,7 @@ link('/home')
 ## 组件里守卫
 
 ```tsx
-import { useBeforeLeave } from 'ask-router';
+import { useBeforeLeave } from '@soften/react-router';
 
 function Home() {
   useBeforeLeave((next) => {

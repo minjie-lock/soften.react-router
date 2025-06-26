@@ -22,8 +22,8 @@ export default defineConfig({
     outDir: 'dist',
     lib: {
       entry: path.resolve(__dirname, 'src/index.ts'),
-      name: 'ask-router',
-      fileName: 'ask-router',
+      name: 'router',
+      fileName: 'router',
       formats: ['es', 'cjs'],
     },
     rollupOptions: {

@@ -86,7 +86,8 @@ export default function createBeforeRouter<R>(
       }
       const every = deep.every((item) => item);
       setEnter(every);
-    }
+    };
+    
     useEffect(() => {
       createEnter();
     }, [location.pathname]);

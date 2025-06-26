@@ -1,15 +1,15 @@
 {
-  "name": "ask-router",
+  "name": "@soften/react-router",
   "private": false,
-  "version": "0.0.8",
+  "version": "0.0.1",
   "type": "module",
-  "main": "./dist/ask-router.cjs",
-  "module": "./dist/ask-router.js",
+  "main": "./dist/router.cjs",
+  "module": "./dist/router.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "require": "./dist/ask-router.js",
-      "import": "./dist/ask-router.js",
+      "require": "./dist/router.js",
+      "import": "./dist/router.js",
       "types": "./dist/index.d.ts"
     }
   },
