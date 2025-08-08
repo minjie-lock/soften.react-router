@@ -1,7 +1,7 @@
 import { lazy } from 'react';
 export type EnterFn<R> = (
-  to: (to: ResolvePaths<R> | number) => void,
-) => Promise<boolean> | boolean;
+  to: (path: string) => void,
+) => React.ReactNode | boolean;
 
 export type LeaveFn = (next: (result: boolean) => void) => void;
 

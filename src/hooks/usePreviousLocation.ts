@@ -1,14 +1,22 @@
 import { useRef, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
-export default function usePreviousLocation() {
+type Location = ReturnType<typeof useLocation>
+
+
+/**
+ * @function usePreviousLocation
+ * @description previous location
+ * @returns {Location}
+ */
+export default function usePreviousLocation(): Location {
 
   const location = useLocation();
-  const prevLocation = useRef(location);
+  const previous = useRef(location);
 
   useEffect(() => {
-    prevLocation.current = location;
+    previous.current = location;
   }, [location]);
 
-  return prevLocation.current;
+  return previous.current;
 }

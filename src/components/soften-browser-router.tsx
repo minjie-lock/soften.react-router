@@ -6,7 +6,7 @@ type StationRouterProps = {
   router: ReturnType<typeof createRouter>;
 };
 
-export default function StationBrowserRouter(props: StationRouterProps) {
+export default function SoftenBrowserRouter(props: StationRouterProps) {
 
   const {
     router

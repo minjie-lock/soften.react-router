@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useEffect, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import { BlockerFunction, useBlocker, useLocation, useNavigate } from "react-router-dom";
 import { EnterFn, LeaveFn } from "../types";
 
@@ -28,7 +28,6 @@ export default function createBeforeRouter<R>(
     } = props;
 
     const [enter, setEnter] = useState(false);
-
     const to = useNavigate();
     const location = useLocation();
 
@@ -47,7 +46,7 @@ export default function createBeforeRouter<R>(
 
     const blocker = useBlocker(Blocker);
 
-    const onBlocker = useCallback(
+    const onBlocker =
       async () => {
         if (blocker?.state === 'blocked') {
           if (!before?.leaves?.length) return blocker.proceed();
@@ -62,15 +61,21 @@ export default function createBeforeRouter<R>(
             every.push(result as boolean);
           }
           const predicate = every?.every(predicate => predicate);
-          if (predicate) blocker.proceed(); else blocker.reset();
+          if (predicate) {
+            // 放行
+            blocker.proceed();
+          } else {
+            // 不放行
+            blocker.reset();
+          }
         }
-      },
-      [blocker?.state]
-    );
+      }
+
+
 
     useEffect(() => {
       onBlocker();
-    }, [onBlocker]);
+    }, [blocker?.state]);
 
     /**
      * 所有守卫通过才会渲染组件
@@ -80,21 +85,21 @@ export default function createBeforeRouter<R>(
       for (const enter of enters) {
         if (typeof enter !== 'function') {
           deep.push(true)
-        }else{
+        } else {
           deep.push(await enter(to))
         }
       }
       const every = deep.every((item) => item);
       setEnter(every);
     };
-    
+
     useEffect(() => {
       createEnter();
     }, [location.pathname]);
 
     if (enter) {
       return children
-    }
+    };
   };
 
 
@@ -102,8 +107,6 @@ export default function createBeforeRouter<R>(
     enters,
     leaves,
   }
-
-
 
   return (
     <BlockerRouter.Provider value={before}>

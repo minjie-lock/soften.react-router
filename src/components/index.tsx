@@ -1,1 +1,1 @@
-export { default as StationBrowserRouter } from './station-browser-router';
+export { default as SoftenBrowserRouter } from './soften-browser-router';
