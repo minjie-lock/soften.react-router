@@ -1,0 +1,1 @@
+export { default as SoftenBrowserRouter } from './soften-browser-router';
