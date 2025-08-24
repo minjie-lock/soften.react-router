@@ -4,8 +4,11 @@ import { defineConfig } from '@rslib/core';
 export default defineConfig({
   source: {
     entry: {
-      index: ['./src/**'],
+      index: [
+        './src/**/*',
+      ],
     },
+    tsconfigPath: './tsconfig.json'
   },
   lib: [
     {
@@ -22,5 +25,7 @@ export default defineConfig({
   output: {
     target: 'web',
   },
-  plugins: [pluginReact()],
+  plugins: [
+    pluginReact()
+  ],
 });

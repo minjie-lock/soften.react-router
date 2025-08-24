@@ -1,28 +1,24 @@
 import { createBrowserRouter, RouteObject, useNavigate } from "react-router-dom";
-import { BeforeRecord, ResolvePaths, Router, RouterStation } from "../types";
+import { ResolvePaths, Router, RouterStation } from '../types';
 import createBeforeRouter from "./createBeforeRouter";
-import React, { lazy } from "react";
+import { lazy } from "react";
 
 
-export default function createRouter<R extends Router<R>[]>(routes: R): RouterStation<R> {
+export default function createRouter<R extends Router<never[]>[]>(routes: R): RouterStation<R> {
 
 
   const createStationRouter = (routes: Router<R>[]): RouteObject[] => {
     return routes?.map((item) => {
       const {
-        beforeLeave,
-        beforeEnter,
         ...rest
       } = item;
-      
-      const Start = (typeof item?.element === 'function' ?
-        lazy(item?.element) : () => item?.element) as () => React.ReactNode;
+
+      const Start = typeof item?.element === 'function' ?
+        lazy(item.element) : item.element;
 
       const element = createBeforeRouter(
-        <Start />,
-        [beforeEnter],
-        [beforeLeave]
-      );
+        (typeof Start === 'function' ? <Start /> : Start),
+      );  
 
       const children = rest?.children?.length ?
         createStationRouter(rest.children) : [];
@@ -30,54 +26,15 @@ export default function createRouter<R extends Router<R>[]>(routes: R): RouterSt
       return {
         ...rest,
         element,
-        ...(rest.children?.length ? { children } : {}),
+        ...(children?.length ? { children } : {}),
       }
-    })
-  }
-
-  /**
-   * @function beforeEnter
-   * @description 全局前置路由守卫
-   * @param enter 
-  */
-  const beforeRouter = (before: BeforeRecord<R>) => {
-
-    const {
-      enter,
-      leave
-    } = before;
-
-    station.router = createBrowserRouter(
-      routes?.map((item) => {
-        const {
-          beforeLeave,
-          beforeEnter,
-          ...rest
-        } = item;
-
-        const Start = (typeof item?.element === 'function' ?
-          lazy(item?.element) : () => item?.element) as () => React.ReactNode;
-        const element = createBeforeRouter(
-          <Start />,
-          [enter, beforeEnter],
-          [leave, beforeLeave],
-        );
-
-        const children = rest?.children?.length ?
-          createStationRouter(rest.children) : [];
-
-        return {
-          ...rest,
-          element,
-          ...(rest.children?.length ? { children } : {}),
-        }
-      })
-    );
+    }) as RouteObject[];
   };
+  
 
   const useLink = () => {
-    const toLink = useNavigate();
-    return (to: ResolvePaths<R> | number) => toLink(to);
+    const onLink = useNavigate();
+    return (to: ResolvePaths<R> | number) => onLink(to);
   };
 
   const router = createBrowserRouter(
@@ -85,9 +42,8 @@ export default function createRouter<R extends Router<R>[]>(routes: R): RouterSt
   );
 
 
-  const station: RouterStation<R> = {
+  const station = {
     router,
-    beforeRouter,
     useLink,
   };
 
