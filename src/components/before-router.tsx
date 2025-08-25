@@ -1,4 +1,4 @@
-import React, { ComponentType, createContext, LazyExoticComponent, useContext, useEffect, useState } from "react";
+import React, { ComponentType, createContext, LazyExoticComponent, useContext, useEffect, useRef, useState } from "react";
 import { BlockerFunction, useBlocker } from "react-router-dom";
 import { EnterFn, LeaveFn } from "../types";
 
@@ -10,8 +10,7 @@ export const BeforeLeaveRouter = createContext<{
   leaves?: (LeaveFn | void)[];
   enters?: (EnterFn | void)[];
 }>({
-  leaves: [],
-  enters: [],
+
 });
 
 /**
@@ -19,7 +18,7 @@ export const BeforeLeaveRouter = createContext<{
 * @param {BeforeRouterProps} props
 * @returns {React.ReactNode}
 */
-const BeforeRouter = (props: BeforeRouterProps): React.ReactNode => {
+const BeforeEnterLeaveRouter = (props: BeforeRouterProps): React.ReactNode => {
 
   const {
     children,
@@ -32,14 +31,15 @@ const BeforeRouter = (props: BeforeRouterProps): React.ReactNode => {
 
   const [enter, setEnter] = useState(false);
 
+  const previous = useRef(leaves);
+
   // 确保所有 hooks 都按顺序执行，移除任何可能导致条件执行的逻辑
   const checkEnter = enters?.length;
-  const checkLeave = leaves?.length;
 
   const Blocker: BlockerFunction = (params) => {
 
-    if (!checkLeave) {
-      return true;
+    if (!leaves?.length) {
+      return false;
     }
 
     const {
@@ -50,7 +50,7 @@ const BeforeRouter = (props: BeforeRouterProps): React.ReactNode => {
     return currentLocation?.pathname !== nextLocation?.pathname
   };
 
-  // 始终调用 useBlocker，避免条件性调用 Hook
+
   const blocker = useBlocker(Blocker);
 
   const onBlocker = async () => {
@@ -59,6 +59,7 @@ const BeforeRouter = (props: BeforeRouterProps): React.ReactNode => {
         * 所有守卫依次执行
        */
       const every: boolean[] = [];
+      
       for (const leave of leaves ?? []) {
         const result = await (typeof leave === 'function' ? new Promise((resolve) => {
           leave?.(resolve);
@@ -115,20 +116,23 @@ const BeforeRouter = (props: BeforeRouterProps): React.ReactNode => {
   return children as React.ReactNode;
 };
 
-export default function createBeforeRouter(
-  element: React.ReactNode | LazyExoticComponent<ComponentType>,
+
+export default function BeforeRouter(
+  props: {
+    children: React.ReactNode;
+  },
 ): React.ReactNode {
 
-  const before = {
+  const before = useRef({
     enters: [],
     leaves: [],
-  };
+  });
 
   return (
-    <BeforeLeaveRouter.Provider value={before}>
-      <BeforeRouter>
-        {element}
-      </BeforeRouter>
+    <BeforeLeaveRouter.Provider value={before.current}>
+      <BeforeEnterLeaveRouter>
+        {props?.children}
+      </BeforeEnterLeaveRouter>
     </BeforeLeaveRouter.Provider>
   );
 }

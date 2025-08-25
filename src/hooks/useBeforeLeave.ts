@@ -1,7 +1,7 @@
 import { useContext, useEffect } from "react";
-import { BeforeLeaveRouter } from "../utils/createBeforeRouter";
 import type { LeaveFn } from "../types";
 import { To, useNavigate } from "react-router-dom";
+import { BeforeLeaveRouter } from "@/components/before-router";
 
 type Options = {
   /**

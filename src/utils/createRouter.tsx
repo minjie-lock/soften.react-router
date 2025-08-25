@@ -1,6 +1,5 @@
 import { createBrowserRouter, RouteObject, useNavigate } from "react-router-dom";
 import { ResolvePaths, Router, RouterStation } from '../types';
-import createBeforeRouter from "./createBeforeRouter";
 import { lazy } from "react";
 
 
@@ -16,9 +15,7 @@ export default function createRouter<R extends Router<never[]>[]>(routes: R): Ro
       const Start = typeof item?.element === 'function' ?
         lazy(item.element) : item.element;
 
-      const element = createBeforeRouter(
-        (typeof Start === 'function' ? <Start /> : Start),
-      );  
+      const element = typeof item?.element === 'function' ? <Start /> : Start; 
 
       const children = rest?.children?.length ?
         createStationRouter(rest.children) : [];
