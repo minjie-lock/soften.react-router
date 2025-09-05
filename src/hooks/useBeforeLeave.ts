@@ -1,21 +1,29 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useRef } from "react";
 import type { LeaveFn } from "../types";
 import { To, useNavigate } from "react-router-dom";
 import { BeforeLeaveRouter } from "@/components/before-router";
 
 type Options = {
-  /**
-   * @function onLeave
-   * @description 导航离开，与 useLink 同理，但使用它不会被拦截
-   * @returns 
-   */
-  onLeaveLink: (to: To) => Promise<boolean>;
-  /**
-   * @function unmount
-   * @description 移除守卫
-   * @returns 
-   */
-  unmount: () => void;
+  leave?: {
+    /**
+     * @function push
+     * @description 添加
+     * @returns 
+     */
+    push: () => void;
+    /**
+    * @function pop
+     * @description 删除
+     * @returns 
+    */
+    pop: () => void;
+    /**
+     * @function link
+     * @description 跳转
+     * @returns 
+     */
+    link: (to: To) => void;
+  }
 };
 
 /**
@@ -29,7 +37,6 @@ export default function useBeforeLeave(leave: LeaveFn): Options {
   const before = useContext(BeforeLeaveRouter);
 
   const onLink = useNavigate();
-
   const unmount = () => {
     const index = before.leaves?.indexOf(leave) ?? -1;
     if (index !== -1) {
@@ -54,8 +61,17 @@ export default function useBeforeLeave(leave: LeaveFn): Options {
     return when;
   };
 
+  const fn = {
+    push: () => {
+      before.leaves?.push(leave);
+    },
+    pop: () => {
+      unmount?.();
+    },
+    link: onLeaveLink,
+  }  
+
   return {
-    onLeaveLink,
-    unmount,
+    leave: fn
   }
 };
