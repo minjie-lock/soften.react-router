@@ -10,6 +10,12 @@ type Options = {
    * @returns 
    */
   onLeaveLink: (to: To) => Promise<boolean>;
+  /**
+   * @function unmount
+   * @description 移除守卫
+   * @returns 
+   */
+  unmount: () => void;
 };
 
 /**
@@ -46,9 +52,10 @@ export default function useBeforeLeave(leave: LeaveFn): Options {
     };
 
     return when;
-  }
+  };
 
   return {
     onLeaveLink,
+    unmount,
   }
 };
